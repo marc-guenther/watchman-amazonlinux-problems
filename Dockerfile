@@ -37,11 +37,16 @@ RUN yum -y update && yum clean all && rm -rf /var/cache/yum
 # RUN echo "(cd watchman;time ./autogen.sh)" >/root/.bash_history
 # RUN (cd watchman;./autogen.sh)
 
-# Installing Watchman through Homebrew takes forever (7min), blows up image size (3.5GB instead of 185MB), and produces a non-functional executable
-RUN yum install -y git tar
-RUN /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-RUN eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" ; brew install watchman
-RUN ln -s /home/linuxbrew/.linuxbrew/bin/watchman* /usr/local/bin/
+# # Installing Watchman through Homebrew takes forever (7min), blows up image size (3.5GB instead of 185MB), and produces a non-functional executable
+# RUN yum install -y git tar
+# RUN /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+# RUN eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" ; brew install watchman
+# RUN ln -s /home/linuxbrew/.linuxbrew/bin/watchman* /usr/local/bin/
+
+# In the end, I had to extract the watchman binary from the old container, and use that :(
+COPY watchman/* /usr/bin/
+# If I want to use watchman-make, I also need to install pywatchman
+RUN yum -y install pip gcc python-devel && pip install pywatchman && yum -y remove pip gcc python-devel && yum -y autoremove && yum clean all && rm -rf /var/cache/yum
 
 # end: install watchman
 
