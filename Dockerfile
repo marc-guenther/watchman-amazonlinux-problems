@@ -1,4 +1,5 @@
-FROM amazonlinux:2
+#FROM amazonlinux:2
+FROM amazonlinux:2023
 
 # upgrade everything
 RUN yum -y update && yum clean all && rm -rf /var/cache/yum
