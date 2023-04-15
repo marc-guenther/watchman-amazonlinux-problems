@@ -25,17 +25,23 @@ RUN yum -y update && yum clean all && rm -rf /var/cache/yum
 # RUN chmod 2777 /usr/local/var/run/watchman
 # RUN yum install -y openssl11
 
-# Compiling from source fails due to: ‘TCP_ULP’ was not declared in this scope
-RUN yum install -y git
-RUN git clone https://github.com/facebook/watchman.git
-RUN yum install -y python3 python-devel
-RUN yum install -y cargo clang make which
-RUN yum install -y openssl11 openssl11-devel
-RUN yum install -y m4
-RUN yum install -y help2man
-RUN yum install -y perl-Thread-Queue perl-Data-Dumper
-RUN echo "(cd watchman;time ./autogen.sh)" >/root/.bash_history
-RUN (cd watchman;./autogen.sh)
+# # Compiling from source fails due to: ‘TCP_ULP’ was not declared in this scope
+# RUN yum install -y git
+# RUN git clone https://github.com/facebook/watchman.git
+# RUN yum install -y python3 python-devel
+# RUN yum install -y cargo clang make which
+# RUN yum install -y openssl11 openssl11-devel
+# RUN yum install -y m4
+# RUN yum install -y help2man
+# RUN yum install -y perl-Thread-Queue perl-Data-Dumper
+# RUN echo "(cd watchman;time ./autogen.sh)" >/root/.bash_history
+# RUN (cd watchman;./autogen.sh)
+
+# Installing Watchman through Homebrew takes forever (7min), blows up image size (3.5GB instead of 185MB), and produces a non-functional executable
+RUN yum install -y git tar
+RUN /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+RUN eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" ; brew install watchman
+RUN ln -s /home/linuxbrew/.linuxbrew/bin/watchman* /usr/local/bin/
 
 # end: install watchman
 
